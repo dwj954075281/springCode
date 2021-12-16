@@ -64,9 +64,11 @@ import org.springframework.lang.Nullable;
  */
 public abstract class AbstractRefreshableApplicationContext extends AbstractApplicationContext {
 
+	//允许bean定义信息被修改
 	@Nullable
 	private Boolean allowBeanDefinitionOverriding;
 
+	//允许循环依赖
 	@Nullable
 	private Boolean allowCircularReferences;
 
@@ -124,10 +126,31 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			closeBeanFactory();
 		}
 		try {
+			//创建BeanFactory，并设置其一些属性值（后续都需要用到）
+			//与注解的Beanfactory不一样，注解的是在实例化applicationContext的时候实例化的Beanfactoy，
+
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
+			//设置BeanFactory的serializationId与applicationContext的Id一致
 			beanFactory.setSerializationId(getId());
+
+			/**
+			 * 设置对应的属性 1.设置是否可重复定义bean 2.设置是否可循环依赖。
+			 * 同时这里还是一个扩展点，写一个属于自己应用的applicationContext
+			 * 需要继承AbstractRefreshableApplicationContext并重写该方法
+			 * spring框架提供了丰富的扩展性，完全可以定制化符合自身业务的框架，这也是spring备受欢迎的一大特点
+			 */
 			customizeBeanFactory(beanFactory);
+			/**《重点》
+			 * 总体：解析配置文件， 并通过配置文件内容转化封装为对应的BeanDefinition对象，
+			 *      添加到BeanFactory对象下的beanDefinitionMap与beanDefinitionNames集合中
+			 *      配置文件类型的spring工程，beanDefinition大部分都在这里进行注册，当然也可以在BFPP进行扩展
+			 *
+			 *
+			 * 流程较为复杂，包括spring标签的解析与自定义标签的解析。
+			 */
 			loadBeanDefinitions(beanFactory);
+			//将创建好的BeanFactory复制给applicationContext上下文
+			//Bean的生命周期都是有BeanFactory进行管理的
 			this.beanFactory = beanFactory;
 		}
 		catch (IOException ex) {
@@ -194,7 +217,10 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
 	 */
 	protected DefaultListableBeanFactory createBeanFactory() {
+		//默认创建DefaultListableBeanFactory 对象 这个时候我们的BeanFactory初步形成
+		// 这也将是管理整个bean的核心类
 		return new DefaultListableBeanFactory(getInternalParentBeanFactory());
+
 	}
 
 	/**
@@ -212,10 +238,10 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @see DefaultListableBeanFactory#setAllowEagerClassLoading
 	 */
 	protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
-		if (this.allowBeanDefinitionOverriding != null) {
+		if (this.allowBeanDefinitionOverriding != null) {////是否允许bean定义的覆盖
 			beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 		}
-		if (this.allowCircularReferences != null) {
+		if (this.allowCircularReferences != null) {//是否允许bean 间的循环依赖
 			beanFactory.setAllowCircularReferences(this.allowCircularReferences);
 		}
 	}

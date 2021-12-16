@@ -108,7 +108,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	private final Set<String> defaultProfiles = new LinkedHashSet<>(getReservedDefaultProfiles());
 
 	private final MutablePropertySources propertySources = new MutablePropertySources();
-
+	//在系统环境的抽象父类里会根据属性源实例化一个默认的PropertySourcesPropertyResolver属性解析器，并且其继承至AbstractPropertyResolver
 	private final ConfigurablePropertyResolver propertyResolver =
 			new PropertySourcesPropertyResolver(this.propertySources);
 
@@ -121,6 +121,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * @see #customizePropertySources(MutablePropertySources)
 	 */
 	public AbstractEnvironment() {
+		//子类实例化时会调用子类的该方法
 		customizePropertySources(this.propertySources);
 	}
 

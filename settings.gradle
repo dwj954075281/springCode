@@ -1,13 +1,18 @@
 pluginManagement {
 	repositories {
-		gradlePluginPortal()
-		maven { url 'https://repo.spring.io/plugins-release' }
+		//gradlePluginPortal()
+		// https://maven.aliyun.com/repository/public
+		//maven { url 'https://repo.spring.io/plugins-release' }
+		maven { url 'https://maven.aliyun.com/repository/public' }
+		maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+		maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
+
 	}
 }
 
 plugins {
 	id "com.gradle.enterprise" version "3.2"
-	id "io.spring.gradle-enterprise-conventions" version "0.0.2"
+//	id "io.spring.gradle-enterprise-conventions" version "0.0.2"
 }
 
 include "spring-aop"
@@ -62,3 +67,6 @@ settings.gradle.projectsLoaded {
 		}
 	}
 }
+include 'learn1'
+include 'learn-thread'
+

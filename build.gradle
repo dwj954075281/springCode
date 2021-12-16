@@ -289,8 +289,10 @@ configure(allprojects) { project ->
 			cacheChangingModulesFor 0, "seconds"
 		}
 		repositories {
-			mavenCentral()
-			maven { url "https://repo.spring.io/libs-spring-framework-build" }
+			//mavenCentral()
+			maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+			maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
+			//maven { url "https://repo.spring.io/libs-spring-framework-build" }
 		}
 	}
 	configurations.all {
@@ -392,7 +394,7 @@ configure(moduleProjects) { project ->
 configure(rootProject) {
 	description = "Spring Framework"
 
-	apply plugin: "groovy"
+	//apply plugin: "groovy"
 	apply plugin: "kotlin"
 	apply plugin: "io.spring.nohttp"
 	apply plugin: 'org.springframework.build.api-diff'

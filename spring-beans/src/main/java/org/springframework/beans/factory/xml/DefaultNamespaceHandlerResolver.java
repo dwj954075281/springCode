@@ -106,7 +106,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	}
 
 
-	/**
+	/**根据命名空间找到对应的命名空间处理类名；然后利用反射对该处理类进行实例化、初始化并返回
 	 * Locate the {@link NamespaceHandler} for the supplied namespace URI
 	 * from the configured mappings.
 	 * @param namespaceUri the relevant namespace URI
@@ -132,7 +132,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 							"] does not implement the [" + NamespaceHandler.class.getName() + "] interface");
 				}
 				NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass);
-				namespaceHandler.init();
+				namespaceHandler.init();//初始化，添加对应的BeanDefinition的解析器
 				handlerMappings.put(namespaceUri, namespaceHandler);
 				return namespaceHandler;
 			}

@@ -32,7 +32,7 @@ dependencies {
 	optional("org.apache.tiles:tiles-jsp")
 	optional("org.apache.tiles:tiles-el")
 	optional("org.apache.tiles:tiles-extras")
-	optional("org.codehaus.groovy:groovy-templates")
+	//optional("org.codehaus.groovy:groovy-templates")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
 	optional("org.reactivestreams:reactive-streams")

@@ -18,7 +18,7 @@ package org.springframework.core.env;
 
 import org.springframework.lang.Nullable;
 
-/**
+/**对所有的源文件解析成相关属性
  * Interface for resolving properties against any underlying source.
  *
  * @author Chris Beams

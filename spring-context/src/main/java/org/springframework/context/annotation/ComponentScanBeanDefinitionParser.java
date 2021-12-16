@@ -80,14 +80,28 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		//获取xml标签对应扫描包的属性值
 		String basePackage = element.getAttribute(BASE_PACKAGE_ATTRIBUTE);
+		//解析标签属性值中的占位符，并替换变量，返回真是的报扫描路径
 		basePackage = parserContext.getReaderContext().getEnvironment().resolvePlaceholders(basePackage);
+		//包扫描路径支持",; \t\n"进行分割，这里转换成数组，分别进行扫描
 		String[] basePackages = StringUtils.tokenizeToStringArray(basePackage,
 				ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
 
 		// Actually scan for bean definitions and register them.
+
 		ClassPathBeanDefinitionScanner scanner = configureScanner(parserContext, element);
+		//进行真实的扫描操作，得到需要注入的相关bean信息，利用beanDefinition的包装类进行封装bean信息
+		//进行BeanDefinition的注入
+		/**
+		 * 这里有个疑问？我们都知道对BeanDefinition的操作都是需要BeanFactory或者BeanDefinitionRegistry的，但是这里没有，是怎么完成注入的呢？
+		 *   其实ParserContext是一致带着注册器跑的可以点进去它的属性看看，这里包完成扫描后得到BeanDefinitionHold，
+		 *   在这一步完成了BeanDefinition的注入
+		 *   ParserContext的属性->XmlReaderContext的属性->XmlBeanDefinitionReader的父类->AbstractBeanDefinitionReader的属性->BeanDefinitionRegistry;
+		 *   在实例化ClassPathBeanDefinitionScanner时会将registry复制到scaner上
+		 */
 		Set<BeanDefinitionHolder> beanDefinitions = scanner.doScan(basePackages);
+		//注册组件？
 		registerComponents(parserContext.getReaderContext(), beanDefinitions, element);
 
 		return null;
@@ -154,7 +168,7 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 				compositeDef.addNestedComponent(new BeanComponentDefinition(processorDefinition));
 			}
 		}
-
+		//发布一个组件注册完成的时间
 		readerContext.fireComponentRegistered(compositeDef);
 	}
 

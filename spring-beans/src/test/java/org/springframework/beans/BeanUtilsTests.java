@@ -59,6 +59,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class BeanUtilsTests {
 
 	@Test
+	void myTest1() {
+		System.out.println("12312312312");
+	}
+	@Test
 	void instantiateClassGivenInterface() {
 		assertThatExceptionOfType(FatalBeanException.class).isThrownBy(() ->
 				BeanUtils.instantiateClass(List.class));

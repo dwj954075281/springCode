@@ -121,17 +121,20 @@ public class PropertyPlaceholderHelper {
 	 */
 	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
 		Assert.notNull(value, "'value' must not be null");
+		//判断并解析资源中是否存在占位符？若存在则进行解析
 		return parseStringValue(value, placeholderResolver, null);
 	}
 
+	//对资源的路劲进行解析，如果有占位符则根据系统相关变量进行替换
 	protected String parseStringValue(
 			String value, PlaceholderResolver placeholderResolver, @Nullable Set<String> visitedPlaceholders) {
 
-		int startIndex = value.indexOf(this.placeholderPrefix);
-		if (startIndex == -1) {
+		int startIndex = value.indexOf(this.placeholderPrefix);//${开头的
+		if (startIndex == -1) { //文件路劲不包含占位符，则直接退出，无需进行解析
 			return value;
 		}
 
+		//解析替换占位符的过程
 		StringBuilder result = new StringBuilder(value);
 		while (startIndex != -1) {
 			int endIndex = findPlaceholderEndIndex(result, startIndex);

@@ -78,6 +78,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 			Assert.noNullElements(locations, "Config locations must not be null");
 			this.configLocations = new String[locations.length];
 			for (int i = 0; i < locations.length; i++) {
+				//获取并创建当前的上下文环境，如许多的系统变量
 				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
 		}

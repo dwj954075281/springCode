@@ -69,4 +69,5 @@ settings.gradle.projectsLoaded {
 }
 include 'learn1'
 include 'learn-thread'
+include 'learn-mvc'
 

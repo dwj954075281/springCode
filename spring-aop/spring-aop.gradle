@@ -3,7 +3,8 @@ description = "Spring AOP"
 dependencies {
 	compile(project(":spring-beans"))
 	compile(project(":spring-core"))
-	optional("org.aspectj:aspectjweaver")
+	//optional当测试工程未显示引入该包，则测试时不会引入该包的内容，改成compile或者在测试工程包内显示引入
+	compile("org.aspectj:aspectjweaver")
 	optional("org.apache.commons:commons-pool2")
 	optional("com.jamonapi:jamon")
 	testCompile(testFixtures(project(":spring-beans")))

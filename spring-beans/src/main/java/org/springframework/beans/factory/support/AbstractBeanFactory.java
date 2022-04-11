@@ -1399,7 +1399,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				mbd = this.mergedBeanDefinitions.get(beanName);
 			}
 
-			// 3.如果beanName对应的MergedBeanDefinition不存在于缓存中
+			// 3.如果beanName对应的MergedBeanDefinition不存在于缓存中，或者是已经过期了
 			if (mbd == null || mbd.stale) {
 				previous = mbd;
 				// 4.如果bd的parentName为空，代表bd没有父定义，无需与父定义进行合并操作
@@ -1519,7 +1519,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		}
 	}
 
-	/**
+	/**将rootBeanDefinition中的是否旧的 标示为true，下次需要重新获取rootBeanDefinition
 	 * Remove the merged bean definition for the specified bean,
 	 * recreating it on next access.
 	 * @param beanName the bean name to clear the merged definition for

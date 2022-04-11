@@ -65,7 +65,7 @@ final class PostProcessorRegistrationDelegate {
 	 *    经过试验，确实会破坏这个顺序。
 	 *    其实spring提供的只是一个顺序规则，让用户开发者对有执行顺序有要求的业务情况
 	 *    知道怎么去使用，但是用户如果强行破坏这一规则，spring这里是没有做强保证的。
-	 *    但是保证了所有BDRPP都会被执行，最后有一个循环处理，只要处理了一个BDRPP就会进入下一个循环冲获取全部beanNames
+	 *    但是保证了所有BDRPP都会被执行，最后有一个循环处理，只要处理了一个BDRPP就会进入下一个循环中获取全部beanNames
 	 * 2.为什么在后面处理只实现BFPP接口的BFPP时，为什么不需要重新获取BeanNames？
 	 *    如果通过BeanFactoryPostProcessor来添加BFPP，则会导致改BFPP不会被执行，尽管添加到BeanDefinitionMap中，
 	 *    但还是不会被执行。
@@ -132,7 +132,7 @@ final class PostProcessorRegistrationDelegate {
 
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
 			//3.处理实现了排序子类 Ordered排序的BDRPP,方法与上面2的方法类似，这里尽在差异点进行说明
-			//postProcessorNames在这里又重新get了一次？？是因为处理上面BDRPP的时候，可能会忘BeanNames里注册新的BDRPP
+			//postProcessorNames在这里又重新get了一次？？是因为处理上面BDRPP的时候，可能会往BeanNames里注册新的BDRPP
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				//判断是否是属于Ordered的，且beanName不在已经执行过BDRPP的集合里processedBeans

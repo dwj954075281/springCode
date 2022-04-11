@@ -318,7 +318,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 */
-	//baenDefinition注册是真正实现逻辑
+	//xml配置baenDefinition注册是真正实现逻辑
 	public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefinitionStoreException {
 		Assert.notNull(encodedResource, "EncodedResource must not be null");
 		if (logger.isTraceEnabled()) {
@@ -328,13 +328,13 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		// 用一个 ThreadLocal 来存放所有的配置文件资源，防并发
 		Set<EncodedResource> currentResources = this.resourcesCurrentlyBeingLoaded.get();
 
-		//
+		//添加到本地线程缓存中
 		if (!currentResources.add(encodedResource)) {
 			throw new BeanDefinitionStoreException(
 					"Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
 
-		// 从 EncodedResource 获取封装的 Resource 并从 Resource 中获取其中的 InputStream
+		// 获取 InputStream
 		try (InputStream inputStream = encodedResource.getResource().getInputStream()) {
 			InputSource inputSource = new InputSource(inputStream);
 			// 设置编码

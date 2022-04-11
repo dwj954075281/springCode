@@ -1,7 +1,9 @@
 package com.learn1.selfTag.selLookup;
 
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * <br>
@@ -13,13 +15,16 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 public class LookupTest {
 	public static void main(String[] args) {
-		ApplicationContext ac=new AnnotationConfigApplicationContext("com.learn1.selfTag");
-		Person bean = ac.getBean(Person.class);
-		bean.show();
-		bean.show();
-		bean.show();
-		bean.show();
-		bean.show();
+		ApplicationContext ctx=new ClassPathXmlApplicationContext("lookupTest.xml");
+
+
+
+	}
+
+	@Test
+	public void annotationTest(){
+		ApplicationContext ac=new AnnotationConfigApplicationContext("com.learn1.selfTag.selLookup");
+
 
 	}
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+">
+	<bean id="orderService" class="com.learn1.proxy.aop.OrderService"></bean>
+	<bean id="logutils" class="com.learn1.proxy.aop.Logutils"></bean>
+
+	<!--常见声明切入点的expression
+	1.within，根据报名和类名进行匹配， 如：within(com.aop.service..*)  匹配com.aop.service包及其子包下所有类的方法
+	2.使用this、target、bean表达式匹配对象类型。("target(com.aop.service.ProductService)")、("bean(*Service)")、("this(com.aop.service.impl.ProductServiceImpl)")
+	3.使用args表达式匹配参数。("args(Long, ..) ")第一个参数为Long的；
+	4.使用@annotation、@within、@target、@args匹配注解("@annotation(com.aop.annotation.AdminOnly)")：匹配特定注解标注了的类
+	5.使用execution表达式
+		modifier-pattern：用于匹配public、private等访问修饰符
+		ret-type-pattern：用于匹配返回值类型，不可省略
+		declaring-type-pattern：用于匹配包类型
+		modifier-pattern（param-pattern）：用于匹配类中的方法，不可省略
+		throws-pattern：用于匹配抛出异常的方法
+	-->
+	<aop:config>
+		<aop:aspect ref="logutils">
+			<aop:pointcut id="myPointcut" expression="bean(*Service)"/>
+			<aop:before method="before" pointcut-ref="myPointcut"></aop:before>
+			<aop:after method="after" pointcut-ref="myPointcut"></aop:after>
+			<aop:after-returning method="afterReturning" pointcut-ref="myPointcut"></aop:after-returning>
+			<aop:after-throwing method="afterThrowing" pointcut-ref="myPointcut"></aop:after-throwing>
+
+		</aop:aspect>
+
+
+	</aop:config>
+
+
+
+
+</beans>

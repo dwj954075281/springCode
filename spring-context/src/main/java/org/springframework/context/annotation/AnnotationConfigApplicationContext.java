@@ -69,7 +69,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		//初始化bean的读取器，其中this继承GenericApplicationContext是实现了BeandefinitionRegistry
 		//然后利用bean注册器进行读取器初始化,
 		//初始化beanFactory并设置到上下文上
+		//AnnotatedBeanDefinitionReader的构造方法会将注解解析的相关类注入到容器中
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+        //注解启动会在容器的构造方法中(父类)初始化BeanFactory，直接new一个实例
 
 		createAnnotatedBeanDefReader.end();
 		this.scanner = new ClassPathBeanDefinitionScanner(this);

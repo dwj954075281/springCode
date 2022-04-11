@@ -525,7 +525,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			// 给 BeanPostProcessors InstantiationAwareBeanPostProcessor一个机会用来返回一个代理类而不是真正的类实例
 			//(1).一种生成bean实例的方法
-			// AOP 的功能就是基于这个地方，创建代理对象，直接返回一个object
+			// AOP 的功能就是基于这个地方，根据对应的BPP创建所需要额Adivsor
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -590,6 +590,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
+					//处理BPP的子接口MergedBeanDefinitionPostProcessor里的postProcessMergedBeanDefinition
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				}
 				catch (Throwable ex) {
@@ -618,6 +619,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object exposedObject = bean;
 		try {
 			populateBean(beanName, mbd, instanceWrapper);
+			//初始化Bean，会调用BeanPostProcessor的before方法
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -1176,7 +1178,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
 		// Make sure bean class is actually resolved at this point.
 		Class<?> beanClass = resolveBeanClass(mbd, beanName);
-		//没有beanClass，或者class不是public，直接抛异常
+		// class不为空且不是public，且beanDefinition不允许访问非公共的构造函数和方法则直接抛异常
 		if (beanClass != null && !Modifier.isPublic(beanClass.getModifiers()) && !mbd.isNonPublicAccessAllowed()) {
 			throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 					"Bean class isn't public, and non-public access not allowed: " + beanClass.getName());
@@ -1394,8 +1396,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Give any InstantiationAwareBeanPostProcessors the opportunity to modify the
 		// state of the bean before properties are set. This can be used, for example,
 		// to support styles of field injection.
-		//这里的最大意义就是，拿到当前bean对象，自己手动进行赋值，然后直接跳过后面属性赋值操作。
+		//这里的最大意义就是，拿到当前bean对象，自己手动进行赋值，
+		// 然后直接跳过后面属性赋值操作。
+		//通过设置其返回值，忽略后续的属性填充，来支持属性的注入
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+			//处理BeanPostProcessor的子类InstantiationAwareBeanPostProcessors，
+			// bean实例化之后调用postProcessAfterInstantiation方法
+			//熟悉spring历史源码的人知道，这spring升级后做了一个优化，不在需要遍历所有BPP了
 			for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
 				if (!bp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
 					return;
@@ -1427,6 +1434,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (pvs == null) {
 				pvs = mbd.getPropertyValues();
 			}
+			//又来一次获取BPP的instantiationAwareBeanPostProcessor
+			//这里调用的方法是postProcessProperties,用来填充properties的具体属性，因为mbd里没有设置属性值
+			//常用的CommonAnnotationBeanPostProcessor、AutowiredAnnotationBeanPostProcessor用来填充属性
 			for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
 				PropertyValues pvsToUse = bp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
 				if (pvsToUse == null) {
@@ -1793,6 +1803,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
+			//处理BeaPostProcessor的before方法：postProcessBeforeInitialization
+			//前面很多也是处理BPP的，但是都是处理器子接口的方法，这里才是处理BPP的
+			//通过返回值是否为null来控制bean的初始化流程是否结束
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 

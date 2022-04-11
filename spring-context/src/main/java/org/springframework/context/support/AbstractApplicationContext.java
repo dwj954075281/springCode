@@ -777,7 +777,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
 
 		/**
-		 * 添加一个BPP，处理时间监听器
+		 * 添加一个BPP，处理时间监听器的探测器
 		 */
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 

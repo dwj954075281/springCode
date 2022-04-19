@@ -370,6 +370,7 @@ public abstract class BeanFactoryUtils {
 	 * @throws BeansException if a bean could not be created
 	 * @see ListableBeanFactory#getBeansOfType(Class, boolean, boolean)
 	 */
+	//根据对应的Bean类型，从指定的beanFactory里获取所有当前类型的bean（子类、接口）
 	public static <T> Map<String, T> beansOfTypeIncludingAncestors(
 			ListableBeanFactory lbf, Class<T> type, boolean includeNonSingletons, boolean allowEagerInit)
 			throws BeansException {

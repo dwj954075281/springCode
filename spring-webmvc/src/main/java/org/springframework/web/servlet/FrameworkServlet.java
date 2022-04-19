@@ -526,6 +526,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		}
 		long startTime = System.currentTimeMillis();
 
+		//初始化mvc的容器
 		try {
 			this.webApplicationContext = initWebApplicationContext();
 			initFrameworkServlet();
@@ -558,6 +559,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextConfigLocation
 	 */
 	protected WebApplicationContext initWebApplicationContext() {
+		//首先获取到web.xml配置的ioc容器上下文
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;
@@ -573,8 +575,10 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 					if (cwac.getParent() == null) {
 						// The context instance was injected without an explicit parent -> set
 						// the root application context (if any; may be null) as the parent
+						//将原来的ioc容器上下文作为父容器加入到当前的mvc容器中
 						cwac.setParent(rootContext);
 					}
+					//刷新mvc容器
 					configureAndRefreshWebApplicationContext(cwac);
 				}
 			}

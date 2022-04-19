@@ -55,7 +55,9 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 	 */
 	@Override
 	public void initApplicationContext() throws ApplicationContextException {
+		//父类完成方法拦截器的初始化工作
 		super.initApplicationContext();
+		//按成当前HandlerMapping的相关初始化工作
 		detectHandlers();
 	}
 

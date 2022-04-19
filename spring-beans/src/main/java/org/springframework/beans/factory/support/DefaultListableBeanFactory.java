@@ -562,28 +562,36 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			// Only consider bean as eligible if the bean name is not defined as alias for some other bean.
 			if (!isAlias(beanName)) {
 				try {
+					//合并beanDefinition转成RootBeanDefinition
 					RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 					// Only check bean definition if it is complete.
 					if (!mbd.isAbstract() && (allowEagerInit ||
 							(mbd.hasBeanClass() || !mbd.isLazyInit() || isAllowEagerClassLoading()) &&
 									!requiresEagerInitForType(mbd.getFactoryBeanName()))) {
+						//是否是factoryBean
 						boolean isFactoryBean = isFactoryBean(beanName, mbd);
 						BeanDefinitionHolder dbd = mbd.getDecoratedDefinition();
 						boolean matchFound = false;
+						//允许factoryBean初始化
 						boolean allowFactoryBeanInit = (allowEagerInit || containsSingleton(beanName));
 						boolean isNonLazyDecorated = (dbd != null && !mbd.isLazyInit());
+						//若不是factorybean
 						if (!isFactoryBean) {
+							//允许非单例的bean或者当前bean是单例
 							if (includeNonSingletons || isSingleton(beanName, mbd, dbd)) {
+								//判断是否能匹配上
 								matchFound = isTypeMatch(beanName, type, allowFactoryBeanInit);
 							}
 						}
 						else {
+							//若是factoryBean，先匹配当前factorybean对应的实例Bean（即factoryBean对应getObject返回的对象）
 							if (includeNonSingletons || isNonLazyDecorated ||
 									(allowFactoryBeanInit && isSingleton(beanName, mbd, dbd))) {
 								matchFound = isTypeMatch(beanName, type, allowFactoryBeanInit);
 							}
 							if (!matchFound) {
 								// In case of FactoryBean, try to match FactoryBean instance itself next.
+								//然后尝试匹配factoryBean自身
 								beanName = FACTORY_BEAN_PREFIX + beanName;
 								matchFound = isTypeMatch(beanName, type, allowFactoryBeanInit);
 							}

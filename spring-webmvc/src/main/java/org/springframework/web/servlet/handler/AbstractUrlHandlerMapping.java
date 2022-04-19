@@ -125,7 +125,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 		this.lazyInitHandlers = lazyInitHandlers;
 	}
 
-	/**
+	/**根据请求url来定位处理的业务控制器
 	 * Look up a handler for the URL path of the given request.
 	 * @param request current HTTP request
 	 * @return the handler instance, or {@code null} if none found
@@ -133,9 +133,10 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	@Override
 	@Nullable
 	protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
+		//获取请求uri，
 		String lookupPath = initLookupPath(request);
 		Object handler;
-		if (usesPathPatterns()) {
+		if (usesPathPatterns()) {//当前HandlerMapping是否支持 路径模式
 			RequestPath path = ServletRequestPathUtils.getParsedRequestPath(request);
 			handler = lookupHandler(path, lookupPath, request);
 		}
@@ -290,6 +291,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 
 	@Nullable
 	private Object getDirectMatch(String urlPath, HttpServletRequest request) throws Exception {
+		//先检查是否有当前请求uri的缓存Handler
 		Object handler = this.handlerMap.get(urlPath);
 		if (handler != null) {
 			// Bean name or resolved handler?

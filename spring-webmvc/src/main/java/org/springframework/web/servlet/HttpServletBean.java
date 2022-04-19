@@ -47,7 +47,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.ServletContextResourceLoader;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
-/**
+/**作为DispatcherServlet的父类，继承至HttpServlet，所以需要实现servlet的
+ * 对应的生命周期，在tomcat启动时需要对该servlet进行初始化
  * Simple extension of {@link javax.servlet.http.HttpServlet} which treats
  * its config parameters ({@code init-param} entries within the
  * {@code servlet} tag in {@code web.xml}) as bean properties.
@@ -139,7 +140,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		return new StandardServletEnvironment();
 	}
 
-	/**
+	/**servlet初始化时，调用的方法
 	 * Map config parameters onto bean properties of this servlet, and
 	 * invoke subclass initialization.
 	 * @throws ServletException if bean properties are invalid (or required
@@ -167,6 +168,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		}
 
 		// Let subclasses do whatever initialization they like.
+		//调用具体的子类实现初始化方法，模板方法，具体有子类实现
 		initServletBean();
 	}
 

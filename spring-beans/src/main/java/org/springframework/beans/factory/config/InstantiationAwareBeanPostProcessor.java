@@ -75,7 +75,8 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 		return null;
 	}
 
-	/**
+	/**根据返回的布尔值，来确定是否还需要继续执行当前bean的属性填充工作，
+	 * 以及后续的InstantiationAwareBeanPostProcessor接口
 	 * Perform operations after the bean has been instantiated, via a constructor or factory method,
 	 * but before Spring property population (from explicit properties or autowiring) occurs.
 	 * <p>This is the ideal callback for performing custom field injection on the given bean

@@ -424,7 +424,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Override
 	public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
 			throws BeansException {
-
+		//处理BPP的前置方法，包括一部分Aware接口
 		Object result = existingBean;
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
 			Object current = processor.postProcessBeforeInitialization(result, beanName);
@@ -510,9 +510,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			mbdToUse = new RootBeanDefinition(mbd);
 			mbdToUse.setBeanClass(resolvedClass);
 		}
-
+		//这里只是打个标记当前bean是否存在被覆盖的方法,后续实例化当前对象时会实例化一个代理类进行方法拦截
 		// Prepare method overrides.
 		// 验证和准备覆盖方法，处理lookup和replace-method覆盖bean获取方法
+		//在后续用默认策略实例化Bean时会替换当前Bean的实例化，生成一个被替换后的Bean
 		try {
 			mbdToUse.prepareMethodOverrides();
 		}
@@ -523,7 +524,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
-			// 给 BeanPostProcessors InstantiationAwareBeanPostProcessor一个机会用来返回一个代理类而不是真正的类实例
+			// 给 BeanPostProcessors InstantiationAwareBeanPostProcessor
+			// 一个机会用来返回一个代理类而不是真正的类实例
 			//(1).一种生成bean实例的方法
 			// AOP 的功能就是基于这个地方，根据对应的BPP创建所需要额Adivsor
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
@@ -587,6 +589,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Allow post-processors to modify the merged bean definition.
+		// 允许后处理器修改合并的 bean 定义。
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
@@ -676,7 +679,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	protected Class<?> predictBeanType(String beanName, RootBeanDefinition mbd, Class<?>... typesToMatch) {
 		Class<?> targetType = determineTargetType(beanName, mbd, typesToMatch);
 		// Apply SmartInstantiationAwareBeanPostProcessors to predict the
-		// eventual type after a before-instantiation shortcut.
+		// eventual type after a before-instantiation shortcut.在Bean实例化之前一个快捷方法确定当前Bean的Class
 		if (targetType != null && !mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			boolean matchingOnlyFactoryBean = typesToMatch.length == 1 && typesToMatch[0] == FactoryBean.class;
 			for (SmartInstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().smartInstantiationAware) {
@@ -700,8 +703,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	@Nullable
 	protected Class<?> determineTargetType(String beanName, RootBeanDefinition mbd, Class<?>... typesToMatch) {
+		//若当前BeanDefinition已经给定了目标类，则直接返回
 		Class<?> targetType = mbd.getTargetType();
 		if (targetType == null) {
+			//若没有，则判断是否是FactoryMethod，有则通过FactoryMethod来探测到类名
 			targetType = (mbd.getFactoryMethodName() != null ?
 					getTypeForFactoryMethod(beanName, mbd, typesToMatch) :
 					resolveBeanClass(mbd, beanName, typesToMatch));
@@ -712,7 +717,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		return targetType;
 	}
 
-	/**
+	/**探测BeanDefinition的目标类型，通过factory method
 	 * Determine the target type for the given bean definition which is based on
 	 * a factory method. Only called if there is no singleton instance registered
 	 * for the target bean already.
@@ -1073,8 +1078,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object instance;
 		try {
 			// Mark this bean as currently in creation, even if just partially.
+			//将此 bean 标记为当前正在创建中，即使只是部分创建
 			beforePrototypeCreation(beanName);
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			// 让 BeanPostProcessors 有机会返回一个代理而不是目标 bean 实例。
 			instance = resolveBeforeInstantiation(beanName, mbd);
 			if (instance == null) {
 				BeanWrapper bw = createBeanInstance(beanName, mbd, null);
@@ -1127,11 +1134,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object bean = null;
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
 			// Make sure bean class is actually resolved at this point.
+			//处理BPP的子接口InstantiationBeanPostProcessor，合成的BD，不是有应用程序自己定义的
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+				//根据BeanName和对应的BeanDefinition探测出对应的需要实例化的类名
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
+					//根据InstantiationBeanPostProcessor的postProcessBeforeInstantiation
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
+						//若通过此方法已经得到了一个实例化后的Bean,此时则可以执行BPP的postProcessAfterInitialization
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
 				}
@@ -1196,6 +1207,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Shortcut when re-creating the same bean...
+		//重新创建一个Bean的快捷方法
+		//如果创建过一次该Bean，则会将Bean的所选构造器与参数值缓存到当前BeanDefinition里
+		//再次创建是则不需要去探测获取构造器和解析参数
 		boolean resolved = false;
 		boolean autowireNecessary = false;
 		if (args == null) {
@@ -1215,7 +1229,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
+		//（1）默认实例化方法，采用构造器反射创建
 		// Candidate constructors for autowiring?
+		//通过BPP的子类SmartInstantiationAwareBeanPostProcessor来自定义探测构造器的方法
+		// （spring 探测构造器也是通过这个接口）
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
@@ -1229,7 +1246,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// No special handling: simply use no-arg constructor.
-		//无特殊指定，采用默认构造器进行实例化
+		//无特殊指定，采用默认无参构造器进行实例化
 		return instantiateBean(beanName, mbd);
 	}
 
@@ -1798,6 +1815,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}, getAccessControlContext());
 		}
 		else {
+			//处理一部分Aware接口：BeanNameAware，BeanClassLoaderAware，BeanFactoryAware
+			//这部分是bean本身实现的对应Aware接口
 			invokeAwareMethods(beanName, bean);
 		}
 
@@ -1806,10 +1825,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			//处理BeaPostProcessor的before方法：postProcessBeforeInitialization
 			//前面很多也是处理BPP的，但是都是处理器子接口的方法，这里才是处理BPP的
 			//通过返回值是否为null来控制bean的初始化流程是否结束
+			//处理部分Aware（由Spring容器管理的，所有Bean都会执行的，无需Bean对象手动实现）
+			//此部分的作用就是将一部分公共的提出到BPP里来处理，而不需要每个Bean都单独实现这些Aware接口
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
-		try {
+		try {//执行初始化方法，包括有实现InitializingBean接口方法
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		}
 		catch (Throwable ex) {

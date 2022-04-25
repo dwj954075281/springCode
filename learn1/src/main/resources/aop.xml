@@ -35,6 +35,10 @@
 
 	</aop:config>
 
+	<bean class="com.learn1.proxy.aop.Person">
+
+	</bean>
+
 
 
 

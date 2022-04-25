@@ -1,5 +1,7 @@
 package com.learn1.proxy.aop;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * <br>
  *
@@ -10,6 +12,8 @@ package com.learn1.proxy.aop;
  */
 
 public class OrderService implements Order{
+	@Autowired
+	private UserService userService;
     @Override
     public void Order() {
         System.out.println("正在下单");

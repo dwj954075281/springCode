@@ -35,7 +35,7 @@ import org.springframework.lang.Nullable;
  */
 public interface InstantiationStrategy {
 
-	/**
+	/**无构造器创建，使用默认的无参构造方法
 	 * Return an instance of the bean with the given name in this factory.
 	 * @param bd the bean definition
 	 * @param beanName the name of the bean when it is created in this context.
@@ -48,7 +48,7 @@ public interface InstantiationStrategy {
 	Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner)
 			throws BeansException;
 
-	/**
+	/**指定构造器创建实例化方法
 	 * Return an instance of the bean with the given name in this factory,
 	 * creating it via the given constructor.
 	 * @param bd the bean definition

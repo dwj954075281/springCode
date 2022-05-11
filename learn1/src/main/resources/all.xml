@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+">
+
+	<context:component-scan base-package="com.learn1.all"></context:component-scan>
+
+<!--	<bean id ="animals" class="com.learn1.all.Animals" >-->
+<!--		<constructor-arg name="person" ref="person"></constructor-arg>-->
+<!--		<constructor-arg name="sex" value="true"></constructor-arg>-->
+
+<!--	</bean>-->
+<!--	<bean id ="person" class="com.learn1.all.Person" autowire="byName" >-->
+<!--		<constructor-arg name="an" ref="animals"></constructor-arg>-->
+<!--		<property name="id" value="1"> </property>-->
+<!--		<property name="name" value="张三"> </property>-->
+<!--		<property name="an" ref="animals" />-->
+<!--		<property name="list"   >-->
+<!--			<list>-->
+<!--				<value>213</value>-->
+<!--				<value>213</value>-->
+<!--			</list>-->
+<!--		</property>-->
+
+<!--		<property name="map">-->
+<!--			<map>-->
+<!--				<entry key="1" value="21321"/>-->
+<!--				<entry key="2" value="21321"/>-->
+<!--			</map>-->
+
+<!--		</property>-->
+<!--	</bean>-->
+
+
+
+
+
+
+
+
+</beans>

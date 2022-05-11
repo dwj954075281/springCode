@@ -2,12 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 ">
-	<bean id="orderService" class="com.learn1.proxy.aop.OrderService"></bean>
+
+	<context:component-scan base-package="com.learn1.proxy.aop"></context:component-scan>
+
 	<bean id="logutils" class="com.learn1.proxy.aop.Logutils"></bean>
 
 	<!--常见声明切入点的expression
@@ -35,9 +39,7 @@
 
 	</aop:config>
 
-	<bean class="com.learn1.proxy.aop.Person">
-
-	</bean>
+	<bean class="com.learn1.proxy.aop.Person"/>
 
 
 

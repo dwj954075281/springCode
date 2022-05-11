@@ -361,7 +361,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		return this.singletonsCurrentlyInCreation.contains(beanName);
 	}
 
-	/**
+	/**如构造器注入时，因为没有将bena提前暴露，则循环依赖会在这里报错，singletonsCurrentlyInCreation添加不进去了
 	 * Callback before singleton creation.
 	 * <p>The default implementation register the singleton as currently in creation.
 	 * @param beanName the name of the singleton about to be created

@@ -137,7 +137,8 @@ public abstract class AnnotationConfigUtils {
 		registerAnnotationConfigProcessors(registry, null);
 	}
 
-	/**在给定的注册表中注册所有相关的注释后处理器
+	/**在给定的注册表中注册所有相关的注释后处理器，并返回BeanDefinitionHolder
+	 * 已经完成对BeanDefiniton的注册，注册到registry里了
 	 * Register all relevant annotation post processors in the given registry.
 	 * @param registry the registry to operate on
 	 * @param source the configuration source element (already extracted)
@@ -148,11 +149,14 @@ public abstract class AnnotationConfigUtils {
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
 
+		//实例化真实的容器BeanFactory
 		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
 		if (beanFactory != null) {
+			//设置排序比较器
 			if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {
 				beanFactory.setDependencyComparator(AnnotationAwareOrderComparator.INSTANCE);
 			}
+			//自动装配的候选解析器
 			if (!(beanFactory.getAutowireCandidateResolver() instanceof ContextAnnotationAutowireCandidateResolver)) {
 				beanFactory.setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());
 			}
@@ -164,24 +168,28 @@ public abstract class AnnotationConfigUtils {
 		//internalConfigurationAnnotationProcessor，注入注解需要的内部bean(配置注解处理器)
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			//springboot是注解启动的spring项目，此BFPP最为核心，包括springboot的自动配置都是在这里进行加载的
+			//包括扫描Bean并解析相应注解
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
-		//internalAutowiredAnnotationProcessor，注入注解需要的内部bean(自动注入注解处理器)
+		//internalAutowiredAnnotationProcessor，
+		// 注入注解需要的内部bean(自动注入注解处理器)
 		if (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
-		//internalCommonAnnotationProcessor,注入注解需要的内部bean(通用注解处理器)
+		//internalCommonAnnotationProcessor,
+		// 注入注解需要的内部bean(通用注解处理器)
 		// Check for JSR-250 support, and if present add the CommonAnnotationBeanPostProcessor.
 		if (jsr250Present && !registry.containsBeanDefinition(COMMON_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(CommonAnnotationBeanPostProcessor.class);
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, COMMON_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
-		//internalPersistenceAnnotationProcessor注入注解需要的内部bean(持久化注解处理器)
+		//internalPersistenceAnnotationProcessor
+		// 注入注解需要的内部bean(持久化注解处理器)
 		// Check for JPA support, and if present add the PersistenceAnnotationBeanPostProcessor.
 		if (jpaPresent && !registry.containsBeanDefinition(PERSISTENCE_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition();

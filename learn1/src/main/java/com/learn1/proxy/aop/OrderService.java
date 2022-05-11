@@ -1,6 +1,7 @@
 package com.learn1.proxy.aop;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * <br>
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @Version 1.0
  */
 
+@Component
 public class OrderService implements Order{
 	@Autowired
 	private UserService userService;

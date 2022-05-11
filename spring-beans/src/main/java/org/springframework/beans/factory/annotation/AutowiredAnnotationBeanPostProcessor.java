@@ -258,7 +258,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 	public Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, final String beanName)
 			throws BeanCreationException {
 
-		// Let's check for lookup methods here...
+		// Let's check for lookup methods here...先检查lookup注解
 		if (!this.lookupMethodsChecked.contains(beanName)) {
 			if (AnnotationUtils.isCandidateClass(beanClass, Lookup.class)) {
 				try {
@@ -292,7 +292,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 			this.lookupMethodsChecked.add(beanName);
 		}
 
-		// Quick check on the concurrent map first, with minimal locking.
+		// Quick check on the concurrent map first, with minimal locking.从缓存中取构造器
 		Constructor<?>[] candidateConstructors = this.candidateConstructorsCache.get(beanClass);
 		if (candidateConstructors == null) {
 			// Fully synchronized resolution now...

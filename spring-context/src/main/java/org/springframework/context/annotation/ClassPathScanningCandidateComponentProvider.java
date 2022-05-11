@@ -499,7 +499,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		return false;
 	}
 
-	/**
+	/**条件注入器，在springboot中使用较多，@Conditional注解配合使用，来判断是否扫描注入到容器
 	 * Determine whether the given class is a candidate component based on any
 	 * {@code @Conditional} annotations.
 	 * @param metadataReader the ASM ClassReader for the class

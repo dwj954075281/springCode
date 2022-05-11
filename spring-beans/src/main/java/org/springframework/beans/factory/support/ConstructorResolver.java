@@ -658,7 +658,7 @@ class ConstructorResolver {
 		}
 	}
 
-	/**
+	/**解析构造器参数，可能涉及到其他bean的寻找与创建
 	 * Resolve the constructor arguments for this bean into the resolvedValues object.
 	 * This may involve looking up other beans.
 	 * <p>This method is also used for handling invocations of static factory methods.
@@ -672,7 +672,7 @@ class ConstructorResolver {
 				new BeanDefinitionValueResolver(this.beanFactory, beanName, mbd, converter);
 
 		int minNrOfArgs = cargs.getArgumentCount();
-
+		//处理map的属性值indexedArgumentValues
 		for (Map.Entry<Integer, ConstructorArgumentValues.ValueHolder> entry : cargs.getIndexedArgumentValues().entrySet()) {
 			int index = entry.getKey();
 			if (index < 0) {
@@ -700,7 +700,7 @@ class ConstructorResolver {
 			if (valueHolder.isConverted()) {
 				resolvedValues.addGenericArgumentValue(valueHolder);
 			}
-			else {
+			else {//根据参数的类型去容器中寻找并创建其他需要依赖的bean
 				Object resolvedValue =
 						valueResolver.resolveValueIfNecessary("constructor argument", valueHolder.getValue());
 				ConstructorArgumentValues.ValueHolder resolvedValueHolder = new ConstructorArgumentValues.ValueHolder(
